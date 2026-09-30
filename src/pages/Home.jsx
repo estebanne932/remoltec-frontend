@@ -183,12 +183,7 @@ function Home() {
                                 Ver productos
                             </a>
 
-                            <a
-                                href="#contacto"
-                                className="btn-secondary"
-                            >
-                                Contáctanos
-                            </a>
+                         
 
                         </div>
 
