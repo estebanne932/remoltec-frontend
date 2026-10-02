@@ -19,7 +19,7 @@ function Home() {
 
         // Cargar categorías
         const categoriasResponse = await fetch(
-            'http://localhost:8000/api/categorias'
+            `${import.meta.env.VITE_API_URL}/api/categorias`
         );
 
         if (!categoriasResponse.ok) {
@@ -32,9 +32,9 @@ function Home() {
 
         setCategorias(categoriasData);
 
-        // Cargar productos
+       // Cargar productos
         const productosResponse = await fetch(
-            'http://localhost:8000/api/productos'
+            `${import.meta.env.VITE_API_URL}/api/productos`
         );
 
         if (!productosResponse.ok) {
