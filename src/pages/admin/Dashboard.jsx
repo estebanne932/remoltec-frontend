@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from 'react';
 
 function Dashboard() {
@@ -16,8 +17,8 @@ function Dashboard() {
         try {
 
             const [categoriasResponse, productosResponse] = await Promise.all([
-                fetch('http://127.0.0.1:8000/api/categorias'),
-                fetch('http://127.0.0.1:8000/api/productos')
+                fetch(`${import.meta.env.VITE_API_URL}/api/categorias`),
+                fetch(`${import.meta.env.VITE_API_URL}/api/productos`)
             ]);
 
             const categoriasData = await categoriasResponse.json();

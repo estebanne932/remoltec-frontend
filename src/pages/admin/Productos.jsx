@@ -36,18 +36,18 @@ function Productos() {
 
             const [productosResponse, categoriasResponse] =
                 await Promise.all([
-                    fetch(
-                        'http://127.0.0.1:8000/api/productos',
-                        {
-                            headers: {
-                                Accept: 'application/json',
-                                Authorization: `Bearer ${token}`,
-                            },
-                        }
-                    ),
+                fetch(
+                    `${import.meta.env.VITE_API_URL}/api/productos`,
+                    {
+                        headers: {
+                            Accept: 'application/json',
+                            Authorization: `Bearer ${token}`,
+                        },
+                    }
+                ),
 
                     fetch(
-                        'http://127.0.0.1:8000/api/categorias',
+                        `${import.meta.env.VITE_API_URL}/api/categorias`,
                         {
                             headers: {
                                 Accept: 'application/json',
@@ -224,9 +224,9 @@ function Productos() {
             const token =
                 localStorage.getItem('token');
 
-            const url = productoEditando
-                ? `http://127.0.0.1:8000/api/productos/${productoEditando.id}`
-                : 'http://127.0.0.1:8000/api/productos';
+           const url = productoEditando
+            ? `${import.meta.env.VITE_API_URL}/api/productos/${productoEditando.id}`
+            : `${import.meta.env.VITE_API_URL}/api/productos`;
 
             const method = productoEditando
                 ? 'PUT'
@@ -307,8 +307,8 @@ function Productos() {
 
         const token = localStorage.getItem('token');
 
-        const response = await fetch(
-            `http://127.0.0.1:8000/api/productos/${producto.id}`,
+       const response = await fetch(
+    `${import.meta.env.VITE_API_URL}/api/productos/${producto.id}`,
             {
                 method: 'DELETE',
                 headers: {

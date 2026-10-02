@@ -31,8 +31,8 @@ function Categoria() {
             setLoading(true);
 
             const response = await fetch(
-                `http://127.0.0.1:8000/api/categorias/${id}/productos`
-            );
+    `${import.meta.env.VITE_API_URL}/api/categorias/${id}/productos`
+);
 
             if (!response.ok) {
                 throw new Error('No se pudieron cargar los productos');
@@ -55,8 +55,8 @@ function Categoria() {
     const cargarCategorias = async () => {
         try {
             const response = await fetch(
-                'http://127.0.0.1:8000/api/categorias'
-            );
+    `${import.meta.env.VITE_API_URL}/api/categorias`
+);
 
             const data = await response.json();
 

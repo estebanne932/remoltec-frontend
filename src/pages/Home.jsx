@@ -284,7 +284,7 @@ function Home() {
                                             <div className="category-image">
                                                 {categoria.imagen ? (
                                                     <img
-                                                        src={`http://127.0.0.1:8000/storage/${categoria.imagen}`}
+                                                        src={`${import.meta.env.VITE_API_URL}/storage/${categoria.imagen}`}
                                                         alt={categoria.nombre}
                                                     />
                                                 ) : (
@@ -392,7 +392,7 @@ function Home() {
                                             producto.imagenes.length > 0 ? (
 
                                                 <img
-                                                    src={`http://127.0.0.1:8000/storage/${producto.imagenes[0].ruta}`}
+                                                    src={`${import.meta.env.VITE_API_URL}/storage/${producto.imagenes[0].ruta}`}
                                                     alt={producto.nombre}
                                                 />
 

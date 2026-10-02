@@ -29,7 +29,7 @@ function Categorias() {
         try {
 
             const response = await fetch(
-                'http://127.0.0.1:8000/api/categorias'
+                `${import.meta.env.VITE_API_URL}/api/categorias`
             );
 
             if (!response.ok) {
@@ -157,11 +157,9 @@ function Categorias() {
 
         const token = localStorage.getItem('token');
 
-        const url = categoriaEditando
-
-            ? `http://127.0.0.1:8000/api/categorias/${categoriaEditando.id}`
-
-            : 'http://127.0.0.1:8000/api/categorias';
+       const url = categoriaEditando
+    ? `${import.meta.env.VITE_API_URL}/api/categorias/${categoriaEditando.id}`
+    : `${import.meta.env.VITE_API_URL}/api/categorias`;
 
 
         const method = categoriaEditando
@@ -262,7 +260,7 @@ function Categorias() {
         try {
 
             const response = await fetch(
-                `http://127.0.0.1:8000/api/categorias/${categoria.id}`,
+                `${import.meta.env.VITE_API_URL}/api/categorias/${categoria.id}`,
                 {
                     method: 'DELETE',
 
