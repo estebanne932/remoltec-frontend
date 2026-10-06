@@ -62,7 +62,6 @@ function Home() {
         setLoading(false);
 
 
-        
         }
     };
 
@@ -124,8 +123,6 @@ function Home() {
             </header>
 
 
-      
-                        
             {/* =========================
                 HERO
             ========================= */}
@@ -134,10 +131,11 @@ function Home() {
                 id="inicio"
                 className="hero"
             >
-                {/* Imagen de fondo */}
+                {/* Imagen o video de fondo. Si usas video, reemplaza
+                    hero-background por un <video> igual que en la
+                    pantalla de mantenimiento, manteniendo hero-overlay encima. */}
                 <div className="hero-background"></div>
 
-                {/* Capa oscura sobre la imagen */}
                 <div className="hero-overlay"></div>
 
                 <div className="hero-container">
@@ -183,7 +181,12 @@ function Home() {
                                 Ver productos
                             </a>
 
-                         
+                            <a
+                                href="#nosotros"
+                                className="btn-secondary"
+                            >
+                                Conócenos
+                            </a>
 
                         </div>
 
@@ -195,6 +198,40 @@ function Home() {
 
             </section>
 
+
+            {/* =========================
+                FRANJA DE VALORES
+            ========================= */}
+
+            <section className="intro-strip">
+
+                <div className="intro-strip-container">
+
+                    <div>
+                        <h3>Hecho para trabajar</h3>
+                        <p>
+                            Partes y soluciones pensadas para
+                            el uso diario de tu remolque.
+                        </p>
+                    </div>
+
+                    <div>
+                        <h3>Catálogo en crecimiento</h3>
+                        <p>
+                            Sumamos categorías y productos
+                            constantemente a nuestro catálogo.
+                        </p>
+                    </div>
+
+                    <nav className="intro-strip-links">
+                        <a href="#categorias">Categorías</a>
+                        <a href="#productos">Productos</a>
+                        <a href="#contacto">Cotizar</a>
+                    </nav>
+
+                </div>
+
+            </section>
 
 
             {/* =========================
@@ -309,6 +346,71 @@ function Home() {
                                 ))
 
                         )}
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            {/* =========================
+                LO QUE NOS DISTINGUE
+            ========================= */}
+
+            <section className="distingue-section">
+
+                <div className="section-container">
+
+                    <motion.div
+                        className="section-heading"
+                        initial={{ opacity: 0, y: 30 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                    >
+                        <span>POR QUÉ REMOLTEC</span>
+                        <h2 style={{ color: '#fff' }}>
+                            Lo que nos distingue
+                        </h2>
+                    </motion.div>
+
+                    <div className="distingue-grid">
+
+                        <div className="distingue-card">
+                            <span>01</span>
+                            <h3>Calidad</h3>
+                            <p>
+                                Partes seleccionadas para resistir
+                                el uso diario de la operación.
+                            </p>
+                        </div>
+
+                        <div className="distingue-card">
+                            <span>02</span>
+                            <h3>Disponibilidad</h3>
+                            <p>
+                                Catálogo organizado por categorías
+                                para encontrar rápido lo que buscas.
+                            </p>
+                        </div>
+
+                        <div className="distingue-card">
+                            <span>03</span>
+                            <h3>Asesoría</h3>
+                            <p>
+                                Te ayudamos a identificar la pieza
+                                correcta para tu remolque.
+                            </p>
+                        </div>
+
+                        <div className="distingue-card">
+                            <span>04</span>
+                            <h3>Confianza</h3>
+                            <p>
+                                Trabajamos para que tu unidad siga
+                                en movimiento sin contratiempos.
+                            </p>
+                        </div>
 
                     </div>
 
@@ -466,6 +568,10 @@ function Home() {
                 id="nosotros"
                 className="about-section"
             >
+
+                <span className="about-watermark" aria-hidden="true">
+                    REMOLTEC
+                </span>
 
                 <div className="section-container">
 
