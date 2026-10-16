@@ -7,6 +7,8 @@ import Footer from '../components/Footer';
 import './ProductoDetalle.css';
 import '../pages/NavbarProductos.css';
 
+
+
 const API_URL = import.meta.env.VITE_API_URL;
 
 function ProductoDetalle() {
@@ -15,6 +17,8 @@ function ProductoDetalle() {
     const [producto, setProducto] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+    const [indiceImagen, setIndiceImagen] = useState(0);
+    const [zoomAbierto, setZoomAbierto] = useState(false);
 
     useEffect(() => {
         const cargarProducto = async () => {
@@ -87,12 +91,13 @@ function ProductoDetalle() {
     );
 }
     const imagenes = producto.imagenes || [];
-    const imagenPrincipal =
-        imagenes.find((imagen) => imagen.principal) || imagenes[0];
+    const imagenSeleccionada = imagenes[indiceImagen] || imagenes[0];
 
-    const imagenSrc = imagenPrincipal
-        ? obtenerImagen(imagenPrincipal.ruta)
+    const imagenSrc = imagenSeleccionada
+        ? obtenerImagen(imagenSeleccionada.ruta)
         : '';
+
+  
 
     return (
     <>
@@ -114,32 +119,146 @@ function ProductoDetalle() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.45 }}
                 >
-                    <div className="detalle-galeria">
-                        <div className="detalle-imagen-principal">
-                            {imagenSrc ? (
-                                <img
-                                    src={imagenSrc}
-                                    alt={producto.nombre}
-                                />
-                            ) : (
-                                <div className="detalle-sin-imagen">
-                                    REMOLTEC
-                                </div>
-                            )}
-                        </div>
+                   
+<div className="detalle-galeria">
+    <div className="detalle-imagen-principal">
+        {imagenSrc ? (
+            <>
+                <img
+                    src={imagenSrc}
+                    alt={producto.nombre}
+                    key={imagenSrc}
+                />
 
-                        {imagenes.length > 1 && (
-                            <div className="detalle-miniaturas">
-                                {imagenes.map((imagen) => (
-                                    <img
-                                        key={imagen.id}
-                                        src={obtenerImagen(imagen.ruta)}
-                                        alt={producto.nombre}
-                                    />
-                                ))}
-                            </div>
-                        )}
-                    </div>
+                <button
+                    type="button"
+                    className="detalle-boton-zoom"
+                    onClick={() => setZoomAbierto(true)}
+                    aria-label="Ampliar imagen"
+                    title="Ampliar imagen"
+                >
+                    <span aria-hidden="true">⌕</span>
+                </button>
+            </>
+        ) : (
+            <div className="detalle-sin-imagen">
+                REMOLTEC
+            </div>
+        )}
+    </div>
+
+    {imagenes.length > 1 && (
+        <div className="detalle-galeria-controles">
+            <button
+                type="button"
+                className="detalle-flecha"
+                onClick={() =>
+                    setIndiceImagen((actual) =>
+                        actual === 0 ? imagenes.length - 1 : actual - 1
+                    )
+                }
+                aria-label="Imagen anterior"
+            >
+                ‹
+            </button>
+
+            <div className="detalle-miniaturas">
+                {imagenes.map((imagen, indice) => (
+                    <button
+                        type="button"
+                        key={imagen.id ?? imagen.ruta}
+                        className={`detalle-miniatura ${
+                            indice === indiceImagen ? 'activa' : ''
+                        }`}
+                        onClick={() => setIndiceImagen(indice)}
+                        aria-label={`Ver imagen ${indice + 1}`}
+                        aria-pressed={indice === indiceImagen}
+                    >
+                        <img
+                            src={obtenerImagen(imagen.ruta)}
+                            alt={`${producto.nombre}, imagen ${indice + 1}`}
+                            loading="lazy"
+                        />
+                    </button>
+                ))}
+            </div>
+
+            <button
+                type="button"
+                className="detalle-flecha"
+                onClick={() =>
+                    setIndiceImagen((actual) =>
+                        actual === imagenes.length - 1 ? 0 : actual + 1
+                    )
+                }
+                aria-label="Imagen siguiente"
+            >
+                ›
+            </button>
+        </div>
+    )}
+
+    {zoomAbierto && imagenSrc && (
+        <div
+            className="detalle-zoom-overlay"
+            onClick={() => setZoomAbierto(false)}
+            role="presentation"
+        >
+            <button
+                type="button"
+                className="detalle-zoom-cerrar"
+                onClick={() => setZoomAbierto(false)}
+                aria-label="Cerrar imagen ampliada"
+            >
+                ×
+            </button>
+
+            <img
+                src={imagenSrc}
+                alt={`${producto.nombre} ampliado`}
+                className="detalle-zoom-imagen"
+                onClick={(evento) => evento.stopPropagation()}
+            />
+
+            {imagenes.length > 1 && (
+                <>
+                    <button
+                        type="button"
+                        className="detalle-zoom-flecha izquierda"
+                        onClick={(evento) => {
+                            evento.stopPropagation();
+                            setIndiceImagen((actual) =>
+                                actual === 0
+                                    ? imagenes.length - 1
+                                    : actual - 1
+                            );
+                        }}
+                        aria-label="Imagen anterior"
+                    >
+                        ‹
+                    </button>
+
+                    <button
+                        type="button"
+                        className="detalle-zoom-flecha derecha"
+                        onClick={(evento) => {
+                            evento.stopPropagation();
+                            setIndiceImagen((actual) =>
+                                actual === imagenes.length - 1
+                                    ? 0
+                                    : actual + 1
+                            );
+                        }}
+                        aria-label="Imagen siguiente"
+                    >
+                        ›
+                    </button>
+                </>
+            )}
+        </div>
+    )}
+</div>
+
 
                     <div className="detalle-informacion">
                         <span className="detalle-etiqueta">
