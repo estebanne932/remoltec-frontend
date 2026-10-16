@@ -1343,3 +1343,54 @@ input {
 .btn-delete:hover {
     background: #b91c1c;
 }
+
+
+
+.btn-view,
+.btn-reactivate {
+    border: none;
+    border-radius: 6px;
+    padding: 8px 12px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.btn-view {
+    background: #e8edf5;
+    color: #26364a;
+}
+
+.btn-reactivate {
+    background: #d9f5e5;
+    color: #166534;
+}
+
+.btn-edit:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+.product-detail-content {
+    padding: 24px;
+}
+
+.product-detail-content p {
+    margin: 0 0 14px;
+    overflow-wrap: anywhere;
+}
+
+.product-detail-images {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.product-detail-images img {
+    width: 150px;
+    height: 120px;
+    object-fit: contain;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: #fff;
+}

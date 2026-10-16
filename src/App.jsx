@@ -11,6 +11,7 @@ import Dashboard from './pages/admin/Dashboard';
 import Categorias from './pages/admin/Categorias';
 import Productos from './pages/admin/Productos';
 import Categoria from './pages/Categoria';
+import ProductoDetalle from './pages/ProductoDetalle';
 import Home from './pages/Home';
 
 function App() {
@@ -77,6 +78,11 @@ function App() {
                         path="/categoria/:id"
                         element={<Categoria />}
                     />
+
+                <Route
+                    path="/producto/:id"
+                    element={<ProductoDetalle />}
+                />
 
             </Routes>
 

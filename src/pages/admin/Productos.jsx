@@ -12,6 +12,7 @@ function Productos() {
     const [productoEditando, setProductoEditando] = useState(null);
 
     const [imagenes, setImagenes] = useState([]);
+    const [detalleProducto, setDetalleProducto] = useState(null);
 
     const [formulario, setFormulario] = useState({
         nombre: '',
@@ -37,7 +38,8 @@ function Productos() {
             const [productosResponse, categoriasResponse] =
                 await Promise.all([
                 fetch(
-                    `${import.meta.env.VITE_API_URL}/api/productos`,
+                  
+                    `${import.meta.env.VITE_API_URL}/api/admin/productos`,
                     {
                         headers: {
                             Accept: 'application/json',
@@ -215,79 +217,76 @@ function Productos() {
     // GUARDAR PRODUCTO
     // ========================================
 
-    const guardarProducto = async (e) => {
+   
+        const guardarProducto = async (e) => {
+            e.preventDefault();
 
-        e.preventDefault();
+            try {
+                const token = localStorage.getItem('token');
 
-        try {
+                const url = productoEditando
+                    ? `${import.meta.env.VITE_API_URL}/api/productos/${productoEditando.id}`
+                    : `${import.meta.env.VITE_API_URL}/api/productos`;
 
-            const token =
-                localStorage.getItem('token');
+                // FormData permite enviar campos y archivos.
+                const datos = new FormData();
 
-           const url = productoEditando
-            ? `${import.meta.env.VITE_API_URL}/api/productos/${productoEditando.id}`
-            : `${import.meta.env.VITE_API_URL}/api/productos`;
+                
+                Object.entries(formulario).forEach(([campo, valor]) => {
+                    if (campo === 'activo') {
+                        datos.append('activo', valor ? '1' : '0');
+                    } else {
+                        datos.append(campo, valor ?? '');
+                    }
+                });
 
-            const method = productoEditando
-                ? 'PUT'
-                : 'POST';
 
-            const response = await fetch(
-                url,
-                {
-                    method,
-                    headers: {
-                        'Content-Type':
-                            'application/json',
 
-                        Accept:
-                            'application/json',
+                // Adjuntar las imágenes seleccionadas.
+                imagenes.forEach((imagen) => {
+                    datos.append('imagenes[]', imagen);
+                });
 
-                        Authorization:
-                            `Bearer ${token}`,
-                    },
-
-                    body:
-                        JSON.stringify(formulario),
+                // Laravel necesita este método para recibir archivos
+                // al actualizar un producto mediante multipart/form-data.
+                if (productoEditando) {
+                    datos.append('_method', 'PUT');
                 }
-            );
 
-            const data =
-                await response.json();
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        Accept: 'application/json',
+                        Authorization: `Bearer ${token}`,
+                    },
+                    body: datos,
+                });
 
-            if (!response.ok) {
+                const data = await response.json();
 
-                console.error(
-                    'Error Laravel:',
-                    data
+                if (!response.ok) {
+                    console.error('Error Laravel:', data);
+
+                    throw new Error(
+                        data.message || 'No se pudo guardar el producto.'
+                    );
+                }
+
+                alert(
+                    productoEditando
+                        ? 'Producto actualizado correctamente.'
+                        : 'Producto creado correctamente.'
                 );
 
-                throw new Error(
-                    data.message ||
-                    'No se pudo guardar el producto.'
-                );
+                cerrarFormulario();
+                await cargarDatos();
+
+            } catch (error) {
+                console.error('Error guardando producto:', error);
+                alert(error.message);
             }
+        };
 
-            alert(
-                productoEditando
-                    ? 'Producto actualizado correctamente.'
-                    : 'Producto creado correctamente.'
-            );
-
-            cerrarFormulario();
-
-            cargarDatos();
-
-        } catch (error) {
-
-            console.error(
-                'Error guardando producto:',
-                error
-            );
-
-            alert(error.message);
-        }
-    };
 
     // ========================================
     // ELIMINAR PRODUCTO
@@ -336,6 +335,46 @@ function Productos() {
 
         alert(error.message);
     }
+
+    
+const reactivarProducto = async (producto) => {
+    const confirmar = window.confirm(
+        `¿Deseas reactivar el producto "${producto.nombre}"?`
+    );
+
+    if (!confirmar) return;
+
+    try {
+        const token = localStorage.getItem('token');
+
+        const response = await fetch(
+            `${import.meta.env.VITE_API_URL}/api/productos/${producto.id}/reactivar`,
+            {
+                method: 'POST',
+                headers: {
+                    Accept: 'application/json',
+                    Authorization: `Bearer ${token}`,
+                },
+            }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(
+                data.message || 'No se pudo reactivar el producto.'
+            );
+        }
+
+        alert('Producto reactivado correctamente.');
+        await cargarDatos();
+
+    } catch (error) {
+        console.error('Error reactivando producto:', error);
+        alert(error.message);
+    }
+};
+
 };
     // ========================================
     // RENDER
@@ -580,6 +619,14 @@ function Productos() {
                                             <td>
 
                                                 <div className="product-actions">
+
+                                                      <button
+                                                            type="button"
+                                                            className="btn-view"
+                                                            onClick={() => setDetalleProducto(producto)}
+                                                        >
+                                                            Ver
+                                                        </button>
 
                                                     <button
                                                         type="button"
@@ -995,6 +1042,93 @@ function Productos() {
                 </div>
 
             )}
+
+            
+{detalleProducto && (
+    <div
+        className="product-modal-overlay"
+        onClick={() => setDetalleProducto(null)}
+    >
+        <div
+            className="product-modal product-detail-modal"
+            onClick={(e) => e.stopPropagation()}
+        >
+            <div className="product-modal-header">
+                <div>
+                    <h2>Detalle del producto</h2>
+                    <p>Información del catálogo Remoltec</p>
+                </div>
+
+                <button
+                    type="button"
+                    className="modal-close"
+                    onClick={() => setDetalleProducto(null)}
+                >
+                    ×
+                </button>
+            </div>
+
+            <div className="product-detail-content">
+                <p>
+                    <strong>Nombre:</strong>{' '}
+                    {detalleProducto.nombre}
+                </p>
+
+                <p>
+                    <strong>SKU:</strong>{' '}
+                    {detalleProducto.sku}
+                </p>
+
+                <p>
+                    <strong>Categoría:</strong>{' '}
+                    {detalleProducto.categoria?.nombre || 'Sin categoría'}
+                </p>
+
+                <p>
+                    <strong>Precio:</strong>{' '}
+                    ${Number(detalleProducto.precio || 0).toFixed(2)}
+                </p>
+
+                <p>
+                    <strong>Stock:</strong>{' '}
+                    {detalleProducto.stock ?? 0}
+                </p>
+
+                <p>
+                    <strong>Etiqueta:</strong>{' '}
+                    {detalleProducto.etiqueta || 'Sin etiqueta'}
+                </p>
+
+                <p>
+                    <strong>Descripción:</strong>{' '}
+                    {detalleProducto.descripcion || 'Sin descripción'}
+                </p>
+
+                <p>
+                    <strong>Estado:</strong>{' '}
+                    {detalleProducto.activo ? 'Activo' : 'Inactivo'}
+                </p>
+
+                <h3>Imágenes</h3>
+
+                <div className="product-detail-images">
+                    {detalleProducto.imagenes?.length > 0 ? (
+                        detalleProducto.imagenes.map((imagen) => (
+                            <img
+                                key={imagen.id}
+                                src={`${import.meta.env.VITE_API_URL}/storage/${imagen.ruta}`}
+                                alt={detalleProducto.nombre}
+                            />
+                        ))
+                    ) : (
+                        <p>Este producto no tiene imágenes registradas.</p>
+                    )}
+                </div>
+            </div>
+        </div>
+    </div>
+)}
+
 
         </div>
     );

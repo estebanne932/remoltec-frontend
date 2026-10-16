@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-
+import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
 import './Categoria.css';
 
 function Categoria() {
@@ -52,6 +53,8 @@ function Categoria() {
         }
     };
 
+    console.log('URL de API:', import.meta.env.VITE_API_URL);
+
     const cargarCategorias = async () => {
         try {
             const response = await fetch(
@@ -96,6 +99,30 @@ function Categoria() {
             );
         }
 
+        
+        const obtenerImagen = (producto) => {
+            const imagen = producto.imagenes?.[0];
+
+            const ruta = imagen?.url || imagen?.imagen || imagen?.ruta;
+
+            if (!ruta) {
+                return '/images/producto-placeholder.jpg';
+            }
+
+            // Si la API ya entrega una URL completa, la conservamos.
+            if (ruta.startsWith('http://') || ruta.startsWith('https://')) {
+                return ruta;
+            }
+
+            // Normalizar rutas relativas de imágenes de Laravel.
+            const rutaLimpia = ruta
+                .replace(/^\/+/, '')
+                .replace(/^storage\//, '');
+
+            return `${import.meta.env.VITE_API_URL}/storage/${rutaLimpia}`;
+        };
+
+
         // ORDENAMIENTO
         switch (orden) {
             case 'nombre':
@@ -136,29 +163,49 @@ function Categoria() {
         setOrden('destacados');
     };
 
-    const obtenerImagen = (producto) => {
-        if (
-            producto.imagenes &&
-            producto.imagenes.length > 0
-        ) {
-            return producto.imagenes[0].url ||
-                producto.imagenes[0].imagen ||
-                producto.imagenes[0].ruta;
-        }
+    
+const obtenerImagen = (producto) => {
+    const imagen = producto.imagenes?.[0];
 
+    const ruta = imagen?.url || imagen?.imagen || imagen?.ruta;
+
+    if (!ruta) {
+        console.warn('El producto no tiene imagen:', producto.nombre, producto);
         return '/images/producto-placeholder.jpg';
-    };
+    }
 
+    if (ruta.startsWith('http://') || ruta.startsWith('https://')) {
+        return ruta;
+    }
+
+    const baseURL = import.meta.env.VITE_API_URL.replace(/\/+$/, '');
+    const rutaLimpia = ruta
+        .replace(/^\/+/, '')
+        .replace(/^storage\//, '');
+
+    return `${baseURL}/storage/${rutaLimpia}`;
+};
+
+
+   
     if (loading) {
         return (
-            <div className="categoria-loading">
-                <div className="loader"></div>
-                <p>Cargando productos...</p>
-            </div>
+            <>
+                <Navbar />
+                <div className="categoria-loading">
+                    <div className="loader"></div>
+                    <p>Cargando productos...</p>
+                </div>
+                <Footer />
+            </>
         );
     }
 
+
     return (
+    <>
+        <Navbar />
+
         <div className="categoria-page">
 
             {/* BARRA DE BENEFICIOS */}
@@ -482,29 +529,11 @@ function Categoria() {
                                                         </h2>
                                                     </Link>
 
-                                                    <p className="product-description">
-                                                        {
-                                                            producto.descripcion
-                                                        }
-                                                    </p>
+                                                  
 
                                                     <div className="product-bottom">
 
-                                                        <div className="product-price">
-                                                            $
-                                                            {Number(
-                                                                producto.precio
-                                                            ).toLocaleString(
-                                                                'es-MX',
-                                                                {
-                                                                    minimumFractionDigits: 2
-                                                                }
-                                                            )}
-
-                                                            <small>
-                                                                MXN
-                                                            </small>
-                                                        </div>
+                                                        
 
                                                         <button
                                                             className="quote-button"
@@ -552,7 +581,9 @@ function Categoria() {
             </a>
 
         </div>
-    );
+      <Footer />
+    </>
+);
 }
 
 export default Categoria;

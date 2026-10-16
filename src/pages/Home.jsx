@@ -292,9 +292,7 @@ function Home() {
 
                         ) : (
 
-                            categorias
-                                .slice(0, 6)
-                                .map((categoria, index) => (
+                            categorias.map((categoria, index) => (
 
                                     <motion.div
                                         className="category-card"
@@ -318,11 +316,17 @@ function Home() {
                                             to={`/categoria/${categoria.id}`}
                                             className="category-link"
                                         >
+
+                                            
                                             <div className="category-image">
                                                 {categoria.imagen ? (
                                                     <img
-                                                        src={`${import.meta.env.VITE_API_URL}/storage/${categoria.imagen}`}
+                                                        src={`${import.meta.env.VITE_API_URL}/storage/${categoria.imagen.replace(/^\/?storage\//, '')}`}
                                                         alt={categoria.nombre}
+                                                        loading="lazy"
+                                                        onError={(e) => {
+                                                            e.currentTarget.style.display = 'none';
+                                                        }}
                                                     />
                                                 ) : (
                                                     <div className="category-placeholder">
@@ -330,6 +334,7 @@ function Home() {
                                                     </div>
                                                 )}
                                             </div>
+
 
                                             <div className="category-info">
                                                 <h3>
@@ -468,86 +473,62 @@ function Home() {
                                 .slice(0, 8)
                                 .map((producto, index) => (
 
-                                    <motion.a
-                                        href={`/producto/${producto.id}`}
+                                   
+                                    <motion.div
                                         className="product-card"
                                         key={producto.id}
-                                        initial={{
-                                            opacity: 0,
-                                            y: 30
-                                        }}
-                                        whileInView={{
-                                            opacity: 1,
-                                            y: 0
-                                        }}
-                                        viewport={{
-                                            once: true
-                                        }}
-                                        transition={{
-                                            delay: index * 0.05
-                                        }}
+                                        initial={{ opacity: 0, y: 30 }}
+                                        whileInView={{ opacity: 1, y: 0 }}
+                                        viewport={{ once: true }}
+                                        transition={{ delay: Math.min(index * 0.05, 0.3) }}
                                     >
+                                        <a
+                                            href={`/producto/${producto.id}`}
+                                            className="product-detail-link"
+                                        >
+                                            <div className="product-image">
+                                                {producto.imagenes && producto.imagenes.length > 0 ? (
+                                                    <img
+                                                        src={`${import.meta.env.VITE_API_URL}/storage/${producto.imagenes[0].ruta.replace(/^\/?storage\//, '')}`}
+                                                        alt={producto.nombre}
+                                                        loading="lazy"
+                                                    />
+                                                ) : (
+                                                    <div className="product-placeholder">
+                                                        REMOLTEC
+                                                    </div>
+                                                )}
 
-                                        <div className="product-image">
-
-                                            {producto.imagenes &&
-                                            producto.imagenes.length > 0 ? (
-
-                                                <img
-                                                    src={`${import.meta.env.VITE_API_URL}/storage/${producto.imagenes[0].ruta}`}
-                                                    alt={producto.nombre}
-                                                />
-
-                                            ) : (
-
-                                                <div className="product-placeholder">
-                                                    REMOLTEC
-                                                </div>
-
-                                            )}
-
-                                            {producto.etiqueta && (
-
-                                                <span className="product-tag">
-                                                    {producto.etiqueta}
-                                                </span>
-
-                                            )}
-
-                                        </div>
-
-                                        <div className="product-info">
-
-                                            <span className="product-category">
-                                                {producto.categoria?.nombre}
-                                            </span>
-
-                                            <h3>
-                                                {producto.nombre}
-                                            </h3>
-
-                                            <div className="product-bottom">
-
-                                                <strong>
-                                                    ${Number(
-                                                        producto.precio
-                                                    ).toLocaleString(
-                                                        'es-MX',
-                                                        {
-                                                            minimumFractionDigits: 2
-                                                        }
-                                                    )}
-                                                </strong>
-
-                                                <span className="product-arrow">
-                                                    →
-                                                </span>
-
+                                                {producto.etiqueta && (
+                                                    <span className="product-tag">
+                                                        {producto.etiqueta}
+                                                    </span>
+                                                )}
                                             </div>
 
-                                        </div>
+                                            <div className="product-info">
+                                                <span className="product-category">
+                                                    {producto.categoria?.nombre}
+                                                </span>
 
-                                    </motion.a>
+                                                <h3>{producto.nombre}</h3>
+                                            </div>
+                                        </a>
+
+                                        <div className="product-footer">
+                                            
+                                    <div className="product-bottom">
+                                        <a
+                                            href="#contacto"
+                                            className="quote-button"
+                                        >
+                                            Cotizar
+                                            <span aria-hidden="true">→</span>
+                                        </a>
+                                    </div>
+
+                                        </div>
+                                    </motion.div>
 
                                 ))
 

@@ -1,5 +1,6 @@
 
 import { useEffect, useState } from 'react';
+import API_URL from "../../api";
 
 function Categorias() {
 
@@ -11,6 +12,10 @@ function Categorias() {
 
     const [categoriaEditando, setCategoriaEditando] = useState(null);
 
+    const [archivoImagen, setArchivoImagen] = useState(null);
+
+    const [vistaPrevia, setVistaPrevia] = useState('');
+
     const [formulario, setFormulario] = useState({
         nombre: '',
         descripcion: '',
@@ -18,6 +23,8 @@ function Categorias() {
         orden: 0,
         activo: true,
     });
+
+
 
 
     // ========================================
@@ -113,7 +120,11 @@ function Categorias() {
 
     const editarCategoria = (categoria) => {
 
+        setArchivoImagen(null);
+setVistaPrevia('');
+
         setCategoriaEditando(categoria);
+        setVistaPrevia(categoria.imagen || '');
 
         setFormulario({
             nombre: categoria.nombre || '',
@@ -147,95 +158,73 @@ function Categorias() {
     };
 
 
-    // ========================================
-    // CREAR / EDITAR CATEGORÍA
-    // ========================================
+   
+const guardarCategoria = async (e) => {
+    e.preventDefault();
 
-    const guardarCategoria = async (e) => {
+    setArchivoImagen(null);
+setVistaPrevia('');
 
-        e.preventDefault();
+    const token = localStorage.getItem('token');
 
-        const token = localStorage.getItem('token');
+    const url = categoriaEditando
+        ? `${import.meta.env.VITE_API_URL}/api/categorias/${categoriaEditando.id}`
+        : `${import.meta.env.VITE_API_URL}/api/categorias`;
 
-       const url = categoriaEditando
-    ? `${import.meta.env.VITE_API_URL}/api/categorias/${categoriaEditando.id}`
-    : `${import.meta.env.VITE_API_URL}/api/categorias`;
+    const method = categoriaEditando ? 'PUT' : 'POST';
 
+    try {
+        const datos = new FormData();
 
-        const method = categoriaEditando
-            ? 'PUT'
-            : 'POST';
+        datos.append('nombre', formulario.nombre);
+        datos.append('descripcion', formulario.descripcion || '');
+        datos.append('orden', String(Number(formulario.orden)));
+        datos.append('activo', formulario.activo ? '1' : '0');
 
-
-        try {
-
-            const response = await fetch(
-                url,
-                {
-                    method,
-
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json',
-                        'Authorization': `Bearer ${token}`,
-                    },
-
-                    body: JSON.stringify({
-
-                        nombre: formulario.nombre,
-
-                        descripcion:
-                            formulario.descripcion,
-
-                        imagen:
-                            formulario.imagen || null,
-
-                        orden:
-                            Number(formulario.orden),
-
-                        activo:
-                            formulario.activo,
-
-                    }),
-                }
-            );
-
-
-            const data = await response.json();
-
-
-            if (!response.ok) {
-
-                throw new Error(
-                    data.message ||
-                    'No se pudo guardar la categoría.'
-                );
-
-            }
-
-
-            alert(
-                categoriaEditando
-
-                    ? 'Categoría actualizada correctamente.'
-
-                    : 'Categoría creada correctamente.'
-            );
-
-
-            cancelarFormulario();
-
-            cargarCategorias();
-
-
-        } catch (error) {
-
-            console.error(error);
-
-            alert(error.message);
-
+        // Adjuntar la imagen solo si seleccionaste una nueva.
+        if (archivoImagen) {
+            datos.append('imagen', archivoImagen);
         }
-    };
+
+        // Laravel procesa la actualización mediante POST + _method.
+        if (method === 'PUT') {
+            datos.append('_method', 'PUT');
+        }
+
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                Authorization: `Bearer ${token}`,
+            },
+            body: datos,
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            console.error('Error Laravel:', data);
+
+            throw new Error(
+                data.message || 'No se pudo guardar la categoría.'
+            );
+        }
+
+        alert(
+            categoriaEditando
+                ? 'Categoría actualizada correctamente.'
+                : 'Categoría creada correctamente.'
+        );
+
+        cancelarFormulario();
+        await cargarCategorias();
+
+    } catch (error) {
+        console.error('Error guardando categoría:', error);
+        alert(error.message);
+    }
+};
+
 
 
     // ========================================
@@ -444,23 +433,45 @@ function Categorias() {
 
                         {/* IMAGEN */}
 
+                        
                         <div className="form-field">
-
                             <label htmlFor="imagen">
-                                Imagen
+                                Imagen de la categoría
                             </label>
-
 
                             <input
                                 id="imagen"
                                 name="imagen"
-                                type="text"
-                                value={formulario.imagen}
-                                onChange={handleChange}
-                                placeholder="Ruta o URL de la imagen"
+                                type="file"
+                                accept="image/jpeg,image/png,image/webp"
+                                onChange={(e) => {
+                                    const archivo = e.target.files?.[0] || null;
+
+                                    setArchivoImagen(archivo);
+                                    setVistaPrevia(
+                                        archivo ? URL.createObjectURL(archivo) : vistaPrevia
+                                    );
+                                }}
                             />
 
+                            {vistaPrevia && (
+                                <div className="category-image-preview">
+                                    <img
+                                        src={
+                                            vistaPrevia.startsWith('blob:')
+                                                ? vistaPrevia
+                                                : `${API_URL}/storage/${vistaPrevia}`
+                                        }
+                                        alt="Vista previa de la categoría"
+                                    />
+                                </div>
+                            )}
+
+                            <small>
+                                Formatos permitidos: JPG, PNG y WebP.
+                            </small>
                         </div>
+
 
 
                         {/* ORDEN */}
