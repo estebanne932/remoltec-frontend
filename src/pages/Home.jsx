@@ -517,15 +517,17 @@ function Home() {
 
                                         <div className="product-footer">
                                             
-                                    <div className="product-bottom">
-                                        <a
-                                            href="#contacto"
-                                            className="quote-button"
-                                        >
-                                            Cotizar
-                                            <span aria-hidden="true">→</span>
-                                        </a>
-                                    </div>
+                                    <a
+                                        href={`https://wa.me/526255941984?text=${encodeURIComponent(
+                                            `Hola, me interesa cotizar el producto: ${producto.nombre}.`
+                                        )}`}
+                                        className="quote-button"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                    >
+                                        Cotizar
+                                        <span aria-hidden="true">→</span>
+                                    </a>
 
                                         </div>
                                     </motion.div>
