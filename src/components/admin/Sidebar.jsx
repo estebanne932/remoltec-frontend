@@ -71,6 +71,8 @@ function Sidebar() {
                     <span>OPERACIÓN</span>
                 </div>
 
+                {/*
+
                 <NavLink
                     to="/admin/pedidos"
                     className={({ isActive }) =>
@@ -90,7 +92,7 @@ function Sidebar() {
                     <span className="sidebar-icon">▥</span>
                     <span>Inventario</span>
                 </NavLink>
-
+                */}
             </nav>
 
 
