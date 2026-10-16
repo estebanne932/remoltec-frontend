@@ -470,7 +470,7 @@ function Home() {
                         ) : (
 
                             productos
-                                .slice(0, 8)
+                                .slice(0, 4)
                                 .map((producto, index) => (
 
                                    
